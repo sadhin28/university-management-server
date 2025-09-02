@@ -80,12 +80,12 @@ async function run() {
             const filter = { _id: new ObjectId(id) };
             const options = { Upsert: true };
             const updatefaculty = req.body;
-            const newUpdateReview = {
+            const newUpdatefaculty = {
                 $set: {
                 
                 }
             }
-            const result = await Facultycollection.updateOne(filter, newUpdateReview, options);
+            const result = await Facultycollection.updateOne(filter, newUpdatefaculty, options);
             res.send(result)
         })
          //===========================Student start================================
@@ -122,12 +122,12 @@ async function run() {
             const filter = { _id: new ObjectId(id) };
             const options = { Upsert: true };
             const updatestudent = req.body;
-            const newUpdateReview = {
+            const newUpdatestudent = {
                 $set: {
                 
                 }
             }
-            const result = await Studentcollection.updateOne(filter, newUpdateReview, options);
+            const result = await Studentcollection.updateOne(filter, newUpdatestudent, options);
             res.send(result)
         })
         //===========================Course start================================
@@ -138,38 +138,38 @@ async function run() {
             const result = await Coursecollection.insertOne(newcourse);
             res.send(result)
         })
-        //get all student collection
-        app.get('/student', async (req, res) => {
-            const coursor = Studentcollection.find();
+        //get all course collection
+        app.get('/course', async (req, res) => {
+            const coursor = Coursecollection.find();
             const result = await coursor.toArray();
             res.send(result)
         })
-        //get student  by id
-        app.get('/student/:id', async (req, res) => {
+        //get course  by id
+        app.get('/course/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
-            const result = await Studentcollection.findOne(query);
+            const result = await Coursecollection.findOne(query);
             res.send(result)
         })
-        //delete student list by id
-        app.delete('/student/:id', async (req, res) => {
+        //delete course list by id
+        app.delete('/course/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
-            const result = await Studentcollection.deleteOne(query);
+            const result = await Coursecollection.deleteOne(query);
             res.send(result)
         })
-        //update student
-        app.put('/student/:id', async (req, res) => {
+        //update course
+        app.put('/course/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const options = { Upsert: true };
-            const updatestudent = req.body;
-            const newUpdateReview = {
+            const updatecourse = req.body;
+            const newUpdatecourse = {
                 $set: {
                 
                 }
             }
-            const result = await Studentcollection.updateOne(filter, newUpdateReview, options);
+            const result = await Coursecollection.updateOne(filter, newUpdatecourse, options);
             res.send(result)
         })
 
