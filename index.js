@@ -9,15 +9,12 @@ app.use(express.json({ limit: '50mb' }));
 app.get('/', (req, res) => {
     res.send('University Management Server is running')
 })
-app.get('/ping',(req,res)=>{
+app.get('/ping', (req, res) => {
     res.send('Pong')
 })
-//===============================
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.anvml2e.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -34,16 +31,16 @@ async function run() {
         const Studentcollection = client.db("StudentsData").collection('Student')
         // //top-rated-game
         app.get("/resent-student", async (req, res) => {
-        const cursor = Studentcollection.find().sort({ rating: -1 }).limit(4);
-        const result = await cursor.toArray();
-        res.send(result);
+            const cursor = Studentcollection.find().sort({ rating: -1 }).limit(4);
+            const result = await cursor.toArray();
+            res.send(result);
         });
 
         //popular-course
         app.get("/popular-course", async (req, res) => {
-        const cursor = Coursecollection.find().sort({ rating: -1 }).limit(4);
-        const result = await cursor.toArray();
-        res.send(result);
+            const cursor = Coursecollection.find().sort({ rating: -1 }).limit(4);
+            const result = await cursor.toArray();
+            res.send(result);
         });
         //===========================faculty start================================
         //post a faculty
@@ -82,13 +79,13 @@ async function run() {
             const updatefaculty = req.body;
             const newUpdatefaculty = {
                 $set: {
-                
+
                 }
             }
             const result = await Facultycollection.updateOne(filter, newUpdatefaculty, options);
             res.send(result)
         })
-         //===========================Student start================================
+        //===========================Student start================================
         //post student
         app.post('/student', async (req, res) => {
             const newstudent = req.body;
@@ -124,7 +121,7 @@ async function run() {
             const updatestudent = req.body;
             const newUpdatestudent = {
                 $set: {
-                
+
                 }
             }
             const result = await Studentcollection.updateOne(filter, newUpdatestudent, options);
@@ -166,14 +163,12 @@ async function run() {
             const updatecourse = req.body;
             const newUpdatecourse = {
                 $set: {
-                
+
                 }
             }
             const result = await Coursecollection.updateOne(filter, newUpdatecourse, options);
             res.send(result)
         })
-
-        
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
@@ -181,9 +176,6 @@ async function run() {
     }
 }
 run().catch(console.dir);
-//===============================
-
-
 app.listen(port, () => {
-    console.log(`Chil-gamer-server is running on port:${port}`)
+    console.log(`University management server is running on port:${port}`)
 })
