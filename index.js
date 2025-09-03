@@ -44,7 +44,7 @@ async function run() {
         });
 
         // POST enroll
-        app.post("/course/:id", async (req, res) => {
+        app.post("/course/enrolled/:id", async (req, res) => {
             const { id } = req.params;
             const course = await Coursecollection.findOne({ _id: new ObjectId(id) });
 
