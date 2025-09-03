@@ -47,7 +47,14 @@ async function run() {
         });
 
         // POST enroll
-        app.post("/course/enrolled/:id", async (req, res) => {
+         app.post('/course/my-enrolled', async (req, res) => {
+            const Faculty = req.body;
+            res.send(Faculty);
+            const result = await StudentEnrolledCollection.insertOne(Faculty);
+            res.send(result)
+        })
+
+        app.post("/course/my-enrolled/:id", async (req, res) => {
             const { id } = req.params;
             const { studentId, studentName,studentEmail } = req.body;
             const course = await Coursecollection.findOne({ _id: new ObjectId(id) });
@@ -74,13 +81,27 @@ async function run() {
         });
 
         //get some data by email using query
-        app.get('/my-enrolled', async (req, res) => {
+        app.get('/course/my-enrolled', async (req, res) => {
             const email = req.query.email;
             const query = { hr_email: email }
             const result = await StudentEnrolledCollection.find(query).toArray();
             res.send(result)
 
         })
+          app.get('/course/my-enrolled/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await StudentEnrolledCollection.findOne(query)
+            res.send(result)
+        })
+          app.delete('/course/my-enrolled/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await StudentEnrolledCollection.deleteOne(query);
+            res.send(result)
+        })
+
+
         //===========================faculty start================================
         //post a faculty
         app.post('/faculty', async (req, res) => {
