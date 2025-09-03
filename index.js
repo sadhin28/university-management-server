@@ -71,7 +71,14 @@ async function run() {
             res.json({ message: "Enrolled successfully" });
         });
 
+        //get some data by email using query
+        app.get('/my-enrolled', async (req, res) => {
+            const email = req.query.email;
+            const query = { hr_email: email }
+            const result = await StudentEnrolledCollection.find(query).toArray();
+            res.send(result)
 
+        })
         //===========================faculty start================================
         //post a faculty
         app.post('/faculty', async (req, res) => {
