@@ -29,6 +29,7 @@ async function run() {
         const Facultycollection = client.db('FacultyData').collection('Faculty')
         const Coursecollection = client.db("CourseData").collection('Course')
         const Studentcollection = client.db("StudentsData").collection('Student')
+        const StudentEnrolledCollection=client.db("EnrolledData").collection('Enrolled')
         // //top-rated-game
         app.get("/resent-student", async (req, res) => {
             const cursor = Studentcollection.find().sort({ rating: -1 }).limit(4);
@@ -148,6 +149,7 @@ async function run() {
             res.send(result)
         })
         //===========================Course start================================
+        
         //post course
         app.post('/course', async (req, res) => {
             const newcourse = req.body;
@@ -187,6 +189,20 @@ async function run() {
                 }
             }
             const result = await Coursecollection.updateOne(filter, newUpdatecourse, options);
+            res.send(result)
+        })
+
+           //Enrolled course
+        app.post('/enrolled', async (req, res) => {
+            const newcourseEnrolled = req.body;
+            res.send(newcourseEnrolled);
+            const result = await StudentEnrolledCollection.insertOne(newcourseEnrolled);
+            res.send(result)
+        })
+        //get all course collection
+        app.get('/enrolled', async (req, res) => {
+            const coursor = StudentEnrolledCollection.find();
+            const result = await coursor.toArray();
             res.send(result)
         })
         await client.db("admin").command({ ping: 1 });
