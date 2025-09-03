@@ -42,6 +42,26 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         });
+
+        // POST enroll
+app.post("/courses/enroll/:id", async (req, res) => {
+  const { id } = req.params;
+  const course = await Coursecollection.findOne({ _id: new ObjectId(id) });
+
+  if (!course) return res.status(404).json({ message: "Course not found" });
+  if (course.enrolled >= course.capacity)
+    return res.status(400).json({ message: "Course full" });
+
+  // increment enrolled count
+  await Coursecollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $inc: { enrolled: 1 } }
+  );
+
+  res.json({ message: "Enrolled successfully" });
+});
+
+
         //===========================faculty start================================
         //post a faculty
         app.post('/faculty', async (req, res) => {
