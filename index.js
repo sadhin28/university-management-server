@@ -44,22 +44,22 @@ async function run() {
         });
 
         // POST enroll
-app.post("/course/:id", async (req, res) => {
-  const { id } = req.params;
-  const course = await Coursecollection.findOne({ _id: new ObjectId(id) });
+        app.post("/course/:id", async (req, res) => {
+            const { id } = req.params;
+            const course = await Coursecollection.findOne({ _id: new ObjectId(id) });
 
-  if (!course) return res.status(404).json({ message: "Course not found" });
-  if (course.enrolled >= course.capacity)
-    return res.status(400).json({ message: "Course full" });
+            if (!course) return res.status(404).json({ message: "Course not found" });
+            if (course.enrolled >= course.capacity)
+                return res.status(400).json({ message: "Course full" });
 
-  // increment enrolled count
-  await Coursecollection.updateOne(
-    { _id: new ObjectId(id) },
-    { $inc: { enrolled: 1 } }
-  );
+            // increment enrolled count
+            await Coursecollection.updateOne(
+                { _id: new ObjectId(id) },
+                { $inc: { enrolled: 1 } }
+            );
 
-  res.json({ message: "Enrolled successfully" });
-});
+            res.json({ message: "Enrolled successfully" });
+        });
 
 
         //===========================faculty start================================
