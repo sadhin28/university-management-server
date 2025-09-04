@@ -5,7 +5,7 @@ const port = process.env.PORT || 5000;
 const app = express()
 require('dotenv').config()
 app.use( cors({
-    origin: ["http://localhost:5174","https://university-management-sy-dc929.web.app"], 
+    origin: ["http://localhost:5174", "https://university-management-sy-dc929.web.app"], 
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }));
