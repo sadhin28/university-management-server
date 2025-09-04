@@ -1,11 +1,33 @@
 const express = require('express');
+const admin =require("firebase-admin")
 const cors = require('cors');
-
 const port = process.env.PORT || 5000;
 const app = express()
 require('dotenv').config()
+app.use( cors({
+    origin: "https://university-management-sy-dc929.web.app", 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }));
+// Firebase Admin Initialize
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+app.post("/make-admin/:uid", async (req, res) => {
+  try {
+    const { uid } = req.params;
+    await admin.auth().setCustomUserClaims(uid, { role: "admin" });
+    res.json({ message: "User is now Admin" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 //middlewire
-app.use(cors());
+
 
 app.use(express.json({ limit: '50mb' }));
 app.get('/', (req, res) => {
@@ -14,6 +36,9 @@ app.get('/', (req, res) => {
 app.get('/ping', (req, res) => {
     res.send('Pong')
 })
+
+
+
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.anvml2e.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
