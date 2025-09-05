@@ -12,6 +12,7 @@ app.use( cors({
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }));
+
 // Firebase Admin Initialize
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
