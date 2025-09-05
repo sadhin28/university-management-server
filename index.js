@@ -4,6 +4,9 @@ const cors = require('cors');
 const port = process.env.PORT || 5000;
 const app = express()
 require('dotenv').config()
+
+app.use(express.json({ limit: "500mb" }));
+
 app.use( cors({
     origin:  "https://university-management-sy-dc929.web.app", 
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -29,7 +32,6 @@ app.post("/make-admin/:uid", async (req, res) => {
 //middlewire
 
 
-app.use(express.json({ limit: '500mb' }));
 app.get('/', (req, res) => {
     res.send('University Management Server is running')
 })
