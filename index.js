@@ -29,7 +29,7 @@ app.post("/make-admin/:uid", async (req, res) => {
 //middlewire
 
 
-app.use(express.json({ limit: '100mb' }));
+app.use(express.json({ limit: '500mb' }));
 app.get('/', (req, res) => {
     res.send('University Management Server is running')
 })
