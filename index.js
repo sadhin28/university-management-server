@@ -32,6 +32,16 @@ app.post("/make-admin/:uid", async (req, res) => {
   }
 });
 
+app.post("/make-teacher/:uid", async (req, res) => {
+  try {
+    const { uid } = req.params;
+    await admin.auth().setCustomUserClaims(uid, { role: "teacher" });
+    res.json({ message: "User is now Admin" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 //middlewire
 
 
