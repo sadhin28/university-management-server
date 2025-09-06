@@ -36,7 +36,7 @@ app.post("/make-teacher/:uid", async (req, res) => {
   try {
     const { uid } = req.params;
     await admin.auth().setCustomUserClaims(uid, { role: "teacher" });
-    res.json({ message: "User is now Admin" });
+    res.json({ message: "User is now Teacher" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
