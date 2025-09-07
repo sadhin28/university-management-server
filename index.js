@@ -120,14 +120,23 @@ async function run() {
             res.json({ message: "Enrolled successfully" });
         });
 
-        //get some data by email using query
-        app.get('/course/my-enrolled', async (req, res) => {
-            const email = req.query.email;
-            const query = { hr_email: email }
-            const result = await StudentEnrolledCollection.find(query).toArray();
-            res.send(result)
+           // ✅ API: Get enrolled courses by email
+    app.get("/course/my-enrolled", async (req, res) => {
+      try {
+        const { studentEmail } = req.query;
 
-        })
+        if (!studentEmail) {
+          return res.status(400).json({ message: "studentEmail is required" });
+        }
+
+        const query = { studentEmail: studentEmail };
+        const result = await StudentEnrolledCollection.find(query).toArray();
+
+        res.status(200).json(result);
+      } catch (error) {
+        res.status(500).json({ message: error.message });
+      }
+    });
           app.get('/course/my-enrolled/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
