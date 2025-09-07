@@ -390,17 +390,27 @@ async function run() {
             res.send(result)
         })
         // Update schedule 
-          app.put('/schedule/:id', async (req, res) => {
-            const id = req.params.id;
-            const filter = { _id: new ObjectId(id) };
-            const options = { Upsert: true };
-            const updatedData = req.body;
-            const newUpdatestudent = {
-                $set:updatedData
-            }
-            const result = await ScheduleCollection.updateOne(filter, newUpdatestudent, options);
-            res.send(result)
-        })
+    app.put('/schedule/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    const updatedData = req.body;
+
+    const updateDoc = { $set: updatedData };
+    const options = { upsert: false }; // যদি নতুন create না করতে চান
+
+    const result = await ScheduleCollection.updateOne(filter, updateDoc, options);
+
+    if (result.matchedCount === 0) {
+      return res.status(404).send({ message: "Schedule not found" });
+    }
+
+    res.send({ message: "Schedule updated successfully", result });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Server error" });
+  }
+});
 
         //===========================Schedule dnd================================
 
