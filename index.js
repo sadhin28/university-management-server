@@ -96,7 +96,7 @@ async function run() {
 
         app.post("/course/my-enrolled/:id", async (req, res) => {
             const { id } = req.params;
-            const { studentId, studentName,studentEmail } = req.body;
+            const { studentId, studentName,studentEmail,instructor,name } = req.body;
             const course = await Coursecollection.findOne({ _id: new ObjectId(id) });
 
             if (!course) return res.status(404).json({ message: "Course not found" });
@@ -114,6 +114,8 @@ async function run() {
                 studentId,
                 studentName,
                 studentEmail,
+                instructor,
+                name,
                 enrolledAt: new Date(),
             });
 
