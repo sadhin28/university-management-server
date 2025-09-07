@@ -380,7 +380,7 @@ async function run() {
             res.send(result)
         })
         
-         // Add schedule
+         // get schedule
         app.get('/schedule', async (req, res) => {
             const coursor = ScheduleCollection.find();
             const result = await coursor.toArray();
