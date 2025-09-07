@@ -367,11 +367,7 @@ async function run() {
         })
         //===========================Course end================================
         
-        
-        
         //===========================schedule start================================
-           
-        
         // post all schedules
          app.post('/schedule', async (req, res) => {
             const newschedule = req.body;
