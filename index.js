@@ -1,5 +1,6 @@
+
 const express = require('express');
-const admin =require("firebase-admin")
+const admin = require("firebase-admin")
 const cors = require('cors');
 const port = process.env.PORT || 5000;
 const app = express()
@@ -7,7 +8,7 @@ require('dotenv').config()
 
 app.use(express.json({ limit: "500mb" }));
 
-app.use( cors());
+app.use(cors());
 
 // {
 //     origin:  "https://university-management-sy-dc929.web.app", 
@@ -19,27 +20,27 @@ app.use( cors());
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(serviceAccount),
 });
 
 app.post("/make-admin/:uid", async (req, res) => {
-  try {
-    const { uid } = req.params;
-    await admin.auth().setCustomUserClaims(uid, { role: "admin" });
-    res.json({ message: "User is now Admin" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        const { uid } = req.params;
+        await admin.auth().setCustomUserClaims(uid, { role: "admin" });
+        res.json({ message: "User is now Admin" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.post("/make-teacher/:uid", async (req, res) => {
-  try {
-    const { uid } = req.params;
-    await admin.auth().setCustomUserClaims(uid, { role: "teacher" });
-    res.json({ message: "User is now Teacher" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        const { uid } = req.params;
+        await admin.auth().setCustomUserClaims(uid, { role: "teacher" });
+        res.json({ message: "User is now Teacher" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 //middlewire
@@ -55,6 +56,8 @@ app.get('/ping', (req, res) => {
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { Axios } = require('axios');
+const axios = require('axios');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.anvml2e.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const client = new MongoClient(uri, {
@@ -72,7 +75,130 @@ async function run() {
         const Coursecollection = client.db("CourseData").collection('Course')
         const Studentcollection = client.db("StudentsData").collection('Student')
         const StudentEnrolledCollection = client.db("EnrolledData").collection('Enrolled')
-        // //top-rated-game
+        const Transectincollection = client.db("TransactionData").collection("Transaction")
+        const ScheduleCollection=client.db("AllSchedules").collection("Schedules")
+        // ============================bikash api start===============================
+
+
+
+        // // --- bKash Sandbox Credentials ---
+        // const BKASH_BASE_URL = "https://checkout.sandbox.bka.sh/v1.2.0-beta";
+        // const BKASH_APP_KEY = "YOUR_SANDBOX_APP_KEY";
+        // const BKASH_APP_SECRET = "YOUR_SANDBOX_APP_SECRET";
+
+
+
+        // let bkashToken = "";
+
+        // async function generateBkashToken() {
+        //     try {
+        //         const res = await axios.post(
+        //             `${BKASH_BASE_URL}/checkout/token/grant`,
+        //             {
+        //                 app_key: BKASH_APP_KEY,
+        //                 app_secret: BKASH_APP_SECRET,
+        //             },
+        //             {
+        //                 headers: { "Content-Type": "application/json" },
+        //             }
+        //         );
+        //         bkashToken = res.data.id_token;
+        //         console.log("bKash token updated.");
+        //     } catch (err) {
+        //         console.error("Failed to get bKash token:", err.message);
+        //     }
+        // }
+
+        // setInterval(generateBkashToken, 55 * 60 * 1000);
+        // generateBkashToken();
+
+        // // --- Initiate Payment ---
+        // app.post("/api/payment/bkash/initiate", async (req, res) => {
+        //     const { amount } = req.body;
+
+        //     try {
+        //         const response = await axios.post(
+        //             `${BKASH_BASE_URL}/checkout/payment/create`,
+        //             {
+        //                 amount: amount.toString(),
+        //                 currency: "BDT",
+        //                 intent: "sale",
+        //                 merchantInvoiceNumber: "INV" + Date.now(),
+        //             },
+        //             {
+        //                 headers: {
+        //                     Authorization: bkashToken,
+        //                     "X-App-Key": BKASH_APP_KEY,
+        //                     "Content-Type": "application/json",
+        //                 },
+        //             }
+        //         );
+
+        //         res.json({
+        //             success: true,
+        //             paymentID: response.data.paymentID,
+        //             bkashResponse: response.data,
+        //         });
+        //     } catch (error) {
+        //         console.error(error.response?.data || error);
+        //         res.status(500).json({ success: false, error: error.message });
+        //     }
+        // });
+
+        // // --- Execute Payment (Simulated for sandbox) ---
+        // app.post("/api/payment/bkash/execute", async (req, res) => {
+        //     const { studentId, studentEmail, amount, courses } = req.body;
+
+        //     try {
+        //         const transactionId = "BKASH" + Math.floor(Math.random() * 1000000);
+
+        //         // Save transaction
+        //         await Transectincollection.insertOne({
+        //             studentId,
+        //             studentEmail,
+        //             amount,
+        //             method: "bKash",
+        //             transactionId,
+        //             courses,
+        //             date: new Date(),
+        //         });
+
+        //         // Update enrollment status
+        //         await StudentEnrolledCollection.updateMany(
+        //             { studentEmail },
+        //             { $set: { paymentStatus: "paid" } }
+        //         );
+
+        //         res.json({ success: true, transactionId });
+        //     } catch (err) {
+        //         console.error(err);
+        //         res.status(500).json({ success: false, error: err.message });
+        //     }
+        // });
+
+        // // --- Manually Update Enrollment Status ---
+        // app.patch("/course/update-payment-status", async (req, res) => {
+        //     const { studentEmail, status } = req.body;
+
+        //     try {
+        //         const result = await StudentEnrolledCollection.updateMany(
+        //             { studentEmail },
+        //             { $set: { paymentStatus: status } }
+        //         );
+        //         res.json(result);
+        //     } catch (err) {
+        //         console.error(err);
+        //         res.status(500).json({ success: false, error: err.message });
+        //     }
+        // });
+
+
+
+        // ============================bikash api end===============================
+
+
+
+        // //top-rated-student
         app.get("/resent-student", async (req, res) => {
             const cursor = Studentcollection.find().sort({ rating: -1 }).limit(4);
             const result = await cursor.toArray();
@@ -87,7 +213,7 @@ async function run() {
         });
 
         // POST enroll
-         app.post('/course/my-enrolled', async (req, res) => {
+        app.post('/course/my-enrolled', async (req, res) => {
             const Faculty = req.body;
             res.send(Faculty);
             const result = await StudentEnrolledCollection.insertOne(Faculty);
@@ -96,7 +222,7 @@ async function run() {
 
         app.post("/course/my-enrolled/:id", async (req, res) => {
             const { id } = req.params;
-            const { studentId, studentName,studentEmail,instructor,name } = req.body;
+            const { studentId, studentName, studentEmail, instructor, name, paymentStatus } = req.body;
             const course = await Coursecollection.findOne({ _id: new ObjectId(id) });
 
             if (!course) return res.status(404).json({ message: "Course not found" });
@@ -108,7 +234,7 @@ async function run() {
                 { _id: new ObjectId(id) },
                 { $inc: { enrolled: 1 } }
             );
-             // Save enrolled student record
+            // Save enrolled student record
             await StudentEnrolledCollection.insertOne({
                 courseId: course._id,
                 studentId,
@@ -116,36 +242,37 @@ async function run() {
                 studentEmail,
                 instructor,
                 name,
+                paymentStatus,
                 enrolledAt: new Date(),
             });
 
             res.json({ message: "Enrolled successfully" });
         });
 
-           // ✅ API: Get enrolled courses by email
-    app.get("/course/my-enrolled", async (req, res) => {
-      try {
-        const { studentEmail } = req.query;
+        // ✅ API: Get enrolled courses by email
+        app.get("/course/my-enrolled", async (req, res) => {
+            try {
+                const { studentEmail } = req.query;
 
-        if (!studentEmail) {
-          return res.status(400).json({ message: "studentEmail is required" });
-        }
+                if (!studentEmail) {
+                    return res.status(400).json({ message: "studentEmail is required" });
+                }
 
-        const query = { studentEmail: studentEmail };
-        const result = await StudentEnrolledCollection.find(query).toArray();
+                const query = { studentEmail: studentEmail };
+                const result = await StudentEnrolledCollection.find(query).toArray();
 
-        res.status(200).json(result);
-      } catch (error) {
-        res.status(500).json({ message: error.message });
-      }
-    });
-          app.get('/course/my-enrolled/:id', async (req, res) => {
+                res.status(200).json(result);
+            } catch (error) {
+                res.status(500).json({ message: error.message });
+            }
+        });
+        app.get('/course/my-enrolled/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await StudentEnrolledCollection.findOne(query)
             res.send(result)
         })
-          app.delete('/course/my-enrolled/:id', async (req, res) => {
+        app.delete('/course/my-enrolled/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await StudentEnrolledCollection.deleteOne(query);
@@ -238,7 +365,48 @@ async function run() {
             const result = await Studentcollection.updateOne(filter, newUpdatestudent, options);
             res.send(result)
         })
-        //===========================Course start================================
+        //===========================Course end================================
+        
+        
+        
+        //===========================schedule start================================
+           
+        
+        // post all schedules
+         app.post('/schedule', async (req, res) => {
+            const newschedule = req.body;
+            res.send(newschedule);
+            const result = await ScheduleCollection.insertOne(newschedule);
+            res.send(result)
+        })
+        
+         // Add schedule
+        app.get('/schedule', async (req, res) => {
+            const coursor = ScheduleCollection.find();
+            const result = await coursor.toArray();
+            res.send(result)
+        })
+        // Delete schedule 
+        app.delete('/schedule/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await ScheduleCollection.deleteOne(query);
+            res.send(result)
+        })
+        // Update schedule 
+          app.put('/schedule/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { Upsert: true };
+            const updatedData = req.body;
+            const newUpdatestudent = {
+                $set:updatedData
+            }
+            const result = await ScheduleCollection.updateOne(filter, newUpdatestudent, options);
+            res.send(result)
+        })
+
+        //===========================Schedule dnd================================
 
         //post course
         app.post('/course', async (req, res) => {
