@@ -42,7 +42,46 @@ app.post("/make-teacher/:uid", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+// Middleware to verify admin
+async function verifyAdmin(req, res, next) {
+    const idToken = req.headers.authorization?.split(" ")[1];
+    if (!idToken) return res.status(401).send("Unauthorized");
 
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        if (decodedToken.role !== "admin") return res.status(403).send("Forbidden: Admins only");
+        next();
+    } catch (err) {
+        res.status(401).send("Invalid token");
+    }
+}
+
+// Get all users (admin only)
+app.get("/users", verifyAdmin, async (req, res) => {
+    try {
+        const listUsersResult = await admin.auth().listUsers(1000);
+        const users = listUsersResult.users.map(u => ({
+            uid: u.uid,
+            email: u.email,
+            name: u.displayName || "No Name",
+            photoURL: u.photoURL || "",
+            role: u.customClaims?.role || "student"
+        }));
+        res.send(users);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
+// Delete user (admin only)
+app.delete("/users/:uid", verifyAdmin, async (req, res) => {
+    try {
+        await admin.auth().deleteUser(req.params.uid);
+        res.send({ message: "User deleted successfully" });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
 //middlewire
 
 
@@ -76,7 +115,7 @@ async function run() {
         const Studentcollection = client.db("StudentsData").collection('Student')
         const StudentEnrolledCollection = client.db("EnrolledData").collection('Enrolled')
         const Transectincollection = client.db("TransactionData").collection("Transaction")
-        const ScheduleCollection=client.db("AllSchedules").collection("Schedules")
+        const ScheduleCollection = client.db("AllSchedules").collection("Schedules")
         // ============================bikash api start===============================
 
 
@@ -366,17 +405,17 @@ async function run() {
             res.send(result)
         })
         //===========================Course end================================
-        
+
         //===========================schedule start================================
         // post all schedules
-         app.post('/schedule', async (req, res) => {
+        app.post('/schedule', async (req, res) => {
             const newschedule = req.body;
             res.send(newschedule);
             const result = await ScheduleCollection.insertOne(newschedule);
             res.send(result)
         })
-        
-         // get schedule
+
+        // get schedule
         app.get('/schedule', async (req, res) => {
             const coursor = ScheduleCollection.find();
             const result = await coursor.toArray();
@@ -390,27 +429,27 @@ async function run() {
             res.send(result)
         })
         // Update schedule 
-    app.put('/schedule/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const filter = { _id: new ObjectId(id) };
-    const updatedData = req.body;
+        app.put('/schedule/:id', async (req, res) => {
+            try {
+                const id = req.params.id;
+                const filter = { _id: new ObjectId(id) };
+                const updatedData = req.body;
 
-    const updateDoc = { $set: updatedData };
-    const options = { upsert: false }; // যদি নতুন create না করতে চান
+                const updateDoc = { $set: updatedData };
+                const options = { upsert: false };
 
-    const result = await ScheduleCollection.updateOne(filter, updateDoc, options);
+                const result = await ScheduleCollection.updateOne(filter, updateDoc, options);
 
-    if (result.matchedCount === 0) {
-      return res.status(404).send({ message: "Schedule not found" });
-    }
+                if (result.matchedCount === 0) {
+                    return res.status(404).send({ message: "Schedule not found" });
+                }
 
-    res.send({ message: "Schedule updated successfully", result });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Server error" });
-  }
-});
+                res.send({ message: "Schedule updated successfully", result });
+            } catch (err) {
+                console.error(err);
+                res.status(500).send({ message: "Server error" });
+            }
+        });
 
         //===========================Schedule dnd================================
 
