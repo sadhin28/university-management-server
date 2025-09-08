@@ -26,22 +26,22 @@ admin.initializeApp({
 // Create user by admin
 // Only admin can create user (you should check token + role here)
 app.post("/create-user", async (req, res) => {
-  try {
-    const { email, password, displayName, role } = req.body;
+    try {
+        const { email, password, displayName, role } = req.body;
 
-    const userRecord = await admin.auth().createUser({
-      email,
-      password,
-      displayName,
-    });
+        const userRecord = await admin.auth().createUser({
+            email,
+            password,
+            displayName,
+        });
 
-    // assign role
-    await admin.auth().setCustomUserClaims(userRecord.uid, { role });
+        // assign role
+        await admin.auth().setCustomUserClaims(userRecord.uid, { role });
 
-    res.status(201).json({ message: "User created", uid: userRecord.uid });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+        res.status(201).json({ message: "User created", uid: userRecord.uid });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 
@@ -60,6 +60,15 @@ app.post("/make-teacher/:uid", async (req, res) => {
         const { uid } = req.params;
         await admin.auth().setCustomUserClaims(uid, { role: "teacher" });
         res.json({ message: "User is now Teacher" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+app.post("/make-student/:uid", async (req, res) => {
+    try {
+        const { uid } = req.params;
+        await admin.auth().setCustomUserClaims(uid, { role: "student" });
+        res.json({ message: "User is now Student" });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -333,11 +342,27 @@ async function run() {
             const result = await StudentEnrolledCollection.findOne(query)
             res.send(result)
         })
-        app.delete('/course/my-enrolled/:id', async (req, res) => {
-            const id = req.params.id;
+        app.delete('/course/my-enrolled/:id/:courseId', async (req, res) => {
+            const { id, courseId } = req.params;
+            // 1. Find the enrollment record
+            const enrollment = await StudentEnrolledCollection.findOne({
+                courseId: new ObjectId(courseId),
+                
+            });
+             await Coursecollection.updateOne(
+                { _id: new ObjectId(courseId) },
+                { $inc: { enrolled: -1 } }
+            );
             const query = { _id: new ObjectId(id) }
             const result = await StudentEnrolledCollection.deleteOne(query);
             res.send(result)
+           
+
+
+
+
+
+
         })
 
 
