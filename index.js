@@ -23,6 +23,28 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
 });
 
+// Create user by admin
+// Only admin can create user (you should check token + role here)
+app.post("/create-user", async (req, res) => {
+  try {
+    const { email, password, displayName, role } = req.body;
+
+    const userRecord = await admin.auth().createUser({
+      email,
+      password,
+      displayName,
+    });
+
+    // assign role
+    await admin.auth().setCustomUserClaims(userRecord.uid, { role });
+
+    res.status(201).json({ message: "User created", uid: userRecord.uid });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 app.post("/make-admin/:uid", async (req, res) => {
     try {
         const { uid } = req.params;
