@@ -8,13 +8,13 @@ require('dotenv').config()
 
 app.use(express.json({ limit: "500mb" }));
 
-app.use(cors({
-    origin:  "https://university-management-sy-dc929.web.app", 
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  }));
+app.use(cors());
 
-
+// {
+//     origin:  "https://university-management-sy-dc929.web.app", 
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   }
 
 // Firebase Admin Initialize
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -88,7 +88,7 @@ async function verifyAdmin(req, res, next) {
 }
 
 // Get all users (admin only)
-app.get("/users", verifyAdmin, async (req, res) => {
+app.get("/users",verifyAdmin, async (req, res) => {
     try {
         const listUsersResult = await admin.auth().listUsers(1000);
         const users = listUsersResult.users.map(u => ({
