@@ -8,13 +8,13 @@ require('dotenv').config()
 
 app.use(express.json({ limit: "500mb" }));
 
-app.use(cors());
+app.use(cors(   {
+    origin:  "https://university-management-sy-dc929.web.app", 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }));
 
-//    {
-//     origin:  "https://university-management-sy-dc929.web.app", 
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//   }
+
 
 // Firebase Admin Initialize
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
