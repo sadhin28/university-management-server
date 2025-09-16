@@ -8,13 +8,13 @@ require('dotenv').config()
 
 app.use(express.json({ limit: "500mb" }));
 
-app.use(cors());
+app.use(cors( {
+    origin:  "https://university-management-sy-dc929.web.app", 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }));
 
-//  {
-//     origin:  "https://university-management-sy-dc929.web.app", 
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//   }
+
 
 // Firebase Admin Initialize
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -88,7 +88,7 @@ async function verifyAdmin(req, res, next) {
 }
 
 // Get all users (admin only)
-app.get("/users",verifyAdmin, async (req, res) => {
+app.get("/users", verifyAdmin, async (req, res) => {
     try {
         const listUsersResult = await admin.auth().listUsers(1000);
         const users = listUsersResult.users.map(u => ({
@@ -265,34 +265,61 @@ async function run() {
 
 
         // ============================bikash api end===============================
-        //post a notice  
-        app.post('/notice', async (req, res) => {
-            const notice = req.body;
-            res.send(notice);
-            const result = await noticeCollection.insertOne(notice);
-            res.send(result)
-        })
-        //get notice
-           app.get('/notice', async (req, res) => {
-            const notice = noticeCollection.find();
-            const result = await notice.toArray();
-            res.send(result)
-        })
-       app.get('/notice/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const result = await noticeCollection.findOne(query)
-            res.send(result)
-        })
-       
-         //delete notice
-        app.delete('/notice/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const result = await noticeCollection.deleteOne(query);
-            res.send(result)
-        })
+        //========notice======
+        // Get all notices
+        app.get("/notice", async (req, res) => {
+            try {
+                const notices = await noticeCollection.find().sort({ createdAt: -1 }).toArray();
+                res.json(notices);
+            } catch (err) {
+                res.status(500).json({ message: err.message });
+            }
+        });
 
+        // Create new notice
+        app.post("/notice", async (req, res) => {
+            try {
+                const notice = {
+                    ...req.body,
+                    seenBy: [], // initially no one has seen
+                    createdAt: new Date()
+                };
+                const result = await noticeCollection.insertOne(notice);
+                res.status(201).json(result.ops[0]);
+            } catch (err) {
+                res.status(400).json({ message: err.message });
+            }
+        });
+
+        // Delete notice
+        app.delete("/notice/:id", async (req, res) => {
+            try {
+                await noticeCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+                res.json({ message: "Deleted" });
+            } catch (err) {
+                res.status(400).json({ message: err.message });
+            }
+        });
+
+        // Mark notice as seen
+        app.patch("/notice/:id/seen", async (req, res) => {
+            const { userId } = req.body;
+            try {
+                const notice = await noticeCollection.findOne({ _id: new ObjectId(req.params.id) });
+                if (!notice.seenBy) notice.seenBy = [];
+                if (!notice.seenBy.includes(userId)) notice.seenBy.push(userId);
+
+                await noticeCollection.updateOne(
+                    { _id: new ObjectId(req.params.id) },
+                    { $set: { seenBy: notice.seenBy } }
+                );
+
+                res.json({ ...notice, seenBy: notice.seenBy });
+            } catch (err) {
+                res.status(400).json({ message: err.message });
+            }
+        });
+        //========endnotice======
 
         // //top-rated-student
         app.get("/resent-student", async (req, res) => {
@@ -373,16 +400,16 @@ async function run() {
             // 1. Find the enrollment record
             const enrollment = await StudentEnrolledCollection.findOne({
                 courseId: new ObjectId(courseId),
-                
+
             });
-             await Coursecollection.updateOne(
+            await Coursecollection.updateOne(
                 { _id: new ObjectId(courseId) },
                 { $inc: { enrolled: -1 } }
             );
             const query = { _id: new ObjectId(id) }
             const result = await StudentEnrolledCollection.deleteOne(query);
             res.send(result)
-           
+
 
 
 
