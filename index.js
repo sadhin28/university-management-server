@@ -265,7 +265,33 @@ async function run() {
 
 
         // ============================bikash api end===============================
-
+        //post a notice  
+        app.post('/notice', async (req, res) => {
+            const notice = req.body;
+            res.send(notice);
+            const result = await noticeCollection.insertOne(notice);
+            res.send(result)
+        })
+        //get notice
+           app.get('/notice', async (req, res) => {
+            const notice = noticeCollection.find();
+            const result = await notice.toArray();
+            res.send(result)
+        })
+       app.get('/notice/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await noticeCollection.findOne(query)
+            res.send(result)
+        })
+       
+         //delete notice
+        app.delete('/notice/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await noticeCollection.deleteOne(query);
+            res.send(result)
+        })
 
 
         // //top-rated-student
