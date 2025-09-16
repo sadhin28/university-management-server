@@ -145,7 +145,7 @@ async function run() {
         const Coursecollection = client.db("CourseData").collection('Course')
         const Studentcollection = client.db("StudentsData").collection('Student')
         const StudentEnrolledCollection = client.db("EnrolledData").collection('Enrolled')
-        const Transectincollection = client.db("TransactionData").collection("Transaction")
+        const noticeCollection = client.db("AllNotice").collection("Notice")
         const ScheduleCollection = client.db("AllSchedules").collection("Schedules")
         // ============================bikash api start===============================
 
