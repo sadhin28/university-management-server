@@ -269,17 +269,17 @@ async function run() {
         // ✅ Get payments by student ID
         app.get("/payments/:studentId", async (req, res) => {
             const studentId = req.params.studentId;
-            const payments = await paymentsCollection.find({ studentId }).toArray();
+            const payments = await transectionCollection.find({ studentId }).toArray();
             res.send(payments);
         });
 
         // ✅ Add a new payment
-        app.post("/payments", async (req, res) => {
-            const payment = req.body;
-            payment.date = new Date().toISOString().split("T")[0]; // auto add date
-            const result = await paymentsCollection.insertOne(payment);
-            res.send(result);
-        });
+           app.post('/payments', async (req, res) => {
+            const transection = req.body;
+            res.send(transection);
+            const result = await transectionCollection.insertOne(transection);
+            res.send(result)
+        })
 
         //========notice======
         // Get all notices
