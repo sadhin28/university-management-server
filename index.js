@@ -8,7 +8,7 @@ require('dotenv').config()
 
 app.use(express.json({ limit: "500mb" }));
 
-app.use(cors( ));
+app.use(cors());
 
 
 // {
@@ -147,6 +147,7 @@ async function run() {
         const StudentEnrolledCollection = client.db("EnrolledData").collection('Enrolled')
         const noticeCollection = client.db("AllNotice").collection("Notice")
         const ScheduleCollection = client.db("AllSchedules").collection("Schedules")
+        const transectionCollection = client.db("Alltransection").collection('transection')
         // ============================bikash api start===============================
 
 
@@ -265,6 +266,21 @@ async function run() {
 
 
         // ============================bikash api end===============================
+        // ✅ Get payments by student ID
+        app.get("/payments/:studentId", async (req, res) => {
+            const studentId = req.params.studentId;
+            const payments = await paymentsCollection.find({ studentId }).toArray();
+            res.send(payments);
+        });
+
+        // ✅ Add a new payment
+        app.post("/payments", async (req, res) => {
+            const payment = req.body;
+            payment.date = new Date().toISOString().split("T")[0]; // auto add date
+            const result = await paymentsCollection.insertOne(payment);
+            res.send(result);
+        });
+
         //========notice======
         // Get all notices
         app.get("/notice", async (req, res) => {
